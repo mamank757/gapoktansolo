@@ -198,7 +198,7 @@ function render(){
   +'<span class="meta">'+hl(r.p,re)+' <span class="jab'+(r.j!=='Anggota'?' pj':'')+'">'+esc(r.j)+'</span></span><span></span>'
   +'<div class="st '+(ok?'ok':'no')+'"><span aria-hidden="true">'+(ok?'✔':'⏳')+'</span><span>ERDKK 2027: '+esc(r.s)+'</span></div></li>'}).join('')
   :'<li class="empty" style="display:block"><strong>Nama tidak ditemukan.</strong><br>Coba tulis sebagian nama saja atau periksa ejaannya.</li>';
- const left=res.length-shown;$('more').hidden=left<=0;$('more').textContent='Tampilkan '+Math.min(PAGE,left)+' lagi';
+ const left=res.length-shown;$('more').hidden=left<=0;$('more').textContent='Tampilkan lagi';
 }
 
 let t;$('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{shown=PAGE;render()},120)});
