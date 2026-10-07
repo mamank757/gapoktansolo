@@ -57,6 +57,35 @@ mark{background:#F6D76B;color:#2A2000;border-radius:3px;padding:0 1px}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted)}
 .more{display:block;width:100%;margin:14px 0 0;padding:14px;border-radius:12px;border:2px solid var(--brand);background:none;color:var(--ink);font:800 1rem "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer}
 footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
+
+/* --- Style Tambahan untuk Animasi Loading --- */
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 0;
+}
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--chip);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.loading-text {
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+/* ------------------------------------------- */
 </style>
 </head>
 <body>
@@ -73,7 +102,20 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 <main class="wrap">
 <div class="gh" id="gh" hidden><button class="back" id="back">‹ Semua kelompok</button><h2 id="gt"></h2></div>
 <p class="count" id="cnt" aria-live="polite"></p>
-<ul id="list"><li class="empty" style="display:block">Memuat data…</li></ul>
+
+<!-- Tampilan Loading Diperbarui Di Sini -->
+<ul id="list">
+  <li class="empty" style="display:block">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <div class="loading-text">
+        <strong>Silakan Tunggu</strong><br>Sedang Mengambil Data Kelompok...
+      </div>
+    </div>
+  </li>
+</ul>
+<!-- ==================================== -->
+
 <button class="more" id="more" hidden></button>
 <footer>Data sesuai spreadsheet Gapoktan Solo. Jika data Anda keliru atau belum muncul, hubungi penyuluh atau admin BPP.</footer>
 </main>
@@ -91,11 +133,27 @@ function start(d){D=d;
 const API_URL='https://script.google.com/macros/s/AKfycbw7uU4pzpq1D6866HOao3hDkEN9N0B-VDAcnu2adW6dfmGQy-v5qzgb3mFfFZLRU-Bf/exec';
 
 // 2. Daftar Link Download ERDKK Masing-masing Kelompok
-// Isi sesuai dengan nama kelompok yang persis sama di spreadsheet.
-// Jika link belum ada, biarkan kosong ("#")
 const LINK_DOWNLOAD = {
-  "SOLO II": "https://drive.google.com/file/d/17lYn5Iz564cL_XWtZvyb9Jxmct1VdToo/view?usp=drive_link",
-  "BULOE": "https://github.com/mamank757/gapoktansolo/blob/0ffdbcc1938e38ab55b58d66b7e1d5bc8fbdce96/BULOE.pdf"
+  "BULOE": "https://github.com/mamank757/gapoktansolo/raw/0ffdbcc1938e38ab55b58d66b7e1d5bc8fbdce96/BULOE.pdf",
+  "DEWI SRI": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/DEWI%20SRI.pdf",
+  "IRE'E": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/IRE'E.pdf",
+  "JANGKALI": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/JANGKALI.pdf",
+  "JANGKALI I": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/JANGKALI%20I.pdf",
+  "KARYA TANI": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/KARYA%20TANI.pdf",
+  "MABBALENNAE": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/MABBALENNAE.pdf",
+  "MAJU BERSAMA": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/MAJU%20BERSAMA.pdf",
+  "MALOMOE": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/MALOMOE.pdf",
+  "MEGA BUANA": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/MEGA%20BUANA.pdf",
+  "MEGA RENNU": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/MEGA%20RENNU.pdf",
+  "PALLA BESSI": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/PALLA%20BESSI.pdf",
+  "PALLABESSI MACCOLLI LOLOE": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/PALLABESSI%20MACCOLLI%20LOLOE.pdf",
+  "PITUJU": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/PITUJU.pdf",
+  "SIPATUO": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/SIPATUO.pdf",
+  "SOLO I": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/SOLO%20I.pdf",
+  "SOLO II": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/SOLO%20II.pdf",
+  "SOLO III": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/SOLO%20III.pdf",
+  "TAWAROE": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/TAWAROE.pdf",
+  "WAETUO": "https://github.com/mamank757/gapoktansolo/raw/084ab2261fb254a562a7161fb053f01300e27ef1/WAETUO.pdf"
 };
 // ========================
 
@@ -142,7 +200,6 @@ function render(){
 let t;$('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{shown=PAGE;render()},120)});
 $('x').onclick=()=>{$('q').value='';shown=PAGE;render();$('q').focus()};
 $('more').onclick=()=>{shown+=PAGE;render()};
-// Fungsi klik hanya aktif jika elemen ditekan di bagian header kelompok, bukan saat klik link
 $('list').addEventListener('click',e=>{const b=e.target.closest('.grp');if(!b)return;
  grp=+b.dataset.i;shown=PAGE;history.pushState({g:grp},'');window.scrollTo(0,0);render()});
 $('back').onclick=()=>history.back();
