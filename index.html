@@ -1,1 +1,118 @@
-
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cek Data Petani – ERDKK 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F5EE;--surface:#fff;--ink:#17261B;--muted:#586A5C;--line:#D5DECF;--brand:#1F5A32;--on-brand:#fff;--warn-bg:#FFF1CC;--warn-ink:#6B4A00;--ok-bg:#D8F0DC;--ok-ink:#11521F;--chip:#E6EDDF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}}
+:root[data-theme="dark"]{--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+header{background:var(--brand);color:var(--on-brand);padding:28px 0 22px}
+h1{margin:0 0 6px;font-size:clamp(1.6rem,6vw,2.2rem);line-height:1.15;font-weight:800;letter-spacing:-.01em}
+header p{margin:0;opacity:.9;font-size:.98rem}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);padding:0 0 16px}
+.search{display:flex;align-items:center;background:var(--surface);border-radius:14px;border:2px solid transparent;padding:0 14px;gap:10px}
+.search:focus-within{border-color:#E3B23C}
+.search svg{flex:none;color:var(--muted)}
+.search input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:600 1.15rem "Plus Jakarta Sans",system-ui,sans-serif;padding:16px 0;outline:none}
+.search input::placeholder{color:var(--muted);font-weight:400}
+.clear{border:0;background:var(--chip);color:var(--ink);border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:none}
+.clear.on{display:block}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px}
+.filters label{flex:1 1 200px;font-size:.85rem;color:var(--muted);font-weight:600}
+select{display:block;width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 1rem "Plus Jakarta Sans",system-ui,sans-serif}
+:focus-visible{outline:3px solid #E3B23C;outline-offset:2px}
+.count{margin:12px 0;color:var(--muted);font-size:.92rem}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:4px 12px}
+.nm{font-weight:800;font-size:1.1rem;overflow-wrap:anywhere}
+.ha{text-align:right;font-weight:800;font-size:1.1rem;white-space:nowrap}
+.ha small{display:block;font-weight:400;font-size:.75rem;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;color:var(--muted);font-size:.93rem}
+.jab{background:var(--chip);color:var(--ink);border-radius:999px;padding:1px 10px;font-size:.82rem;font-weight:600}
+.jab.pj{background:#E3B23C;color:#3A2A00}
+.st{grid-column:1/-1;margin-top:6px;border-radius:8px;padding:8px 10px;font-size:.9rem;font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.st.no{background:var(--warn-bg);color:var(--warn-ink)}
+.st.ok{background:var(--ok-bg);color:var(--ok-ink)}
+mark{background:#F6D76B;color:#2A2000;border-radius:3px;padding:0 1px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted)}
+.more{display:block;width:100%;margin:14px 0 0;padding:14px;border-radius:12px;border:2px solid var(--brand);background:none;color:var(--ink);font:800 1rem "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer}
+footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Cek Data Petani<br>ERDKK 2027</h1>
+<p id="sub">Gapoktan Solo</p>
+</div></header>
+<div class="bar"><div class="wrap">
+<div class="search" role="search">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+<input id="q" type="search" placeholder="Ketik nama petani…" autocomplete="off" aria-label="Cari nama petani">
+<button class="clear" id="x" aria-label="Hapus pencarian">×</button>
+</div></div></div>
+<main class="wrap">
+<div class="filters">
+<label>Kelompok tani<select id="fp"><option value="">Semua kelompok</option></select></label>
+<label id="fsw">Status ERDKK 2027<select id="fs"><option value="">Semua status</option></select></label>
+</div>
+<p class="count" id="cnt" aria-live="polite"></p>
+<ul id="list"><li class="empty" style="display:block">Memuat data…</li></ul>
+<button class="more" id="more" hidden></button>
+<footer>Data sesuai spreadsheet Gapoktan Solo. Jika data Anda keliru atau belum muncul, hubungi penyuluh atau admin BPP.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id),PAGE=40;
+let shown=PAGE,rows=[],D=null;
+function start(d){D=d;
+ rows=D.r.map(r=>({n:r[0],p:D.p[r[1]],pi:r[1],j:D.j[r[2]],l:r[3],s:D.s[r[4]],si:r[4],k:(r[0]+' '+D.p[r[1]]).toLowerCase()}));
+ $('sub').textContent='Gapoktan Solo · '+rows.length.toLocaleString('id-ID')+' petani di '+D.p.length+' kelompok tani';
+ D.p.forEach((p,i)=>$('fp').add(new Option(p,i)));
+ D.s.forEach((s,i)=>$('fs').add(new Option(s,i)));
+ if(D.s.length<2)$('fsw').hidden=true;
+ render();}
+// ====== PENGATURAN ======
+// Tempel link Web App Apps Script (berakhiran /exec) di antara tanda petik:
+const API_URL='https://script.google.com/macros/s/AKfycbw7uU4pzpq1D6866HOao3hDkEN9N0B-VDAcnu2adW6dfmGQy-v5qzgb3mFfFZLRU-Bf/exec';
+// ========================
+// ========================
+function fail(msg){$('list').innerHTML='<li class="empty" style="display:block"><strong>Data belum bisa dimuat.</strong><br>'+msg+'</li>'}
+async function load(){
+ if(!API_URL){fail('Link Apps Script (API_URL) di file index.html belum diisi.');return}
+ try{const res=await fetch(API_URL+(API_URL.includes('?')?'&':'?')+'t='+Date.now());if(!res.ok)throw 0;
+  const d=await res.json();if(!d.r||!d.r.length)throw 0;start(d)}
+ catch(e){fail('Periksa sambungan internet lalu muat ulang halaman ini.')}
+}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function hl(t,re){return re?t.split(re).map((x,i)=>i%2?'<mark>'+esc(x)+'</mark>':esc(x)).join(''):esc(t)}
+function render(){
+ if(!D)return;
+ const q=$('q').value.trim().toLowerCase(),tk=q?q.split(/\s+/):[],fp=$('fp').value,fs=$('fs').value;
+ $('x').classList.toggle('on',!!q);
+ const re=tk.length?new RegExp('('+tk.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi'):null;
+ const res=rows.filter(r=>(!fp||r.pi==fp)&&(!fs||r.si==fs)&&tk.every(t=>r.k.includes(t)));
+ $('cnt').textContent=res.length?'Menampilkan '+Math.min(shown,res.length)+' dari '+res.length+' petani':'';
+ $('list').innerHTML=res.length?res.slice(0,shown).map(r=>{
+  const ok=/^(sudah|terdaftar)/i.test(r.s);
+  return '<li><span class="nm">'+hl(r.n,re)+'</span><span class="ha">'+r.l.toLocaleString('id-ID',{maximumFractionDigits:2})+' ha<small>luas lahan</small></span>'
+  +'<span class="meta">'+hl(r.p,re)+' <span class="jab'+(r.j!=='Anggota'?' pj':'')+'">'+esc(r.j)+'</span></span><span></span>'
+  +'<div class="st '+(ok?'ok':'no')+'"><span aria-hidden="true">'+(ok?'✔':'⏳')+'</span><span>ERDKK 2027: '+esc(r.s)+'</span></div></li>'}).join('')
+  :'<li class="empty" style="display:block"><strong>Nama tidak ditemukan.</strong><br>Coba tulis sebagian nama saja, periksa ejaan, atau pilih kelompok tani di atas.</li>';
+ const left=res.length-shown;$('more').hidden=left<=0;$('more').textContent='Tampilkan '+Math.min(PAGE,left)+' lagi';
+}
+let t;$('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{shown=PAGE;render()},120)});
+['fp','fs'].forEach(i=>$(i).addEventListener('change',()=>{shown=PAGE;render()}));
+$('x').onclick=()=>{$('q').value='';shown=PAGE;render();$('q').focus()};
+$('more').onclick=()=>{shown+=PAGE;render()};
+load();
+</script>
+</body>
+</html>
