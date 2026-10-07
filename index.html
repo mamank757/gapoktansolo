@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F2F5EE;--surface:#fff;--ink:#17261B;--muted:#586A5C;--line:#D5DECF;--brand:#1F5A32;--on-brand:#fff;--warn-bg:#FFF1CC;--warn-ink:#6B4A00;--ok-bg:#D8F0DC;--ok-ink:#11521eF;--chip:#E6EDDF;
+:root{--bg:#F2F5EE;--surface:#fff;--ink:#17261B;--muted:#586A5C;--line:#D5DECF;--brand:#1F5A32;--on-brand:#fff;--warn-bg:#FFF1CC;--warn-ink:#6B4A00;--ok-bg:#D8F0DC;--ok-ink:#11521F;--chip:#E6EDDF;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}}
 :root[data-theme="dark"]{--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}
@@ -30,12 +30,17 @@ header p{margin:0;opacity:.9;font-size:.98rem}
 .gh{margin:16px 0 0}
 .back{border:0;background:none;color:var(--ink);font:700 1rem "Plus Jakarta Sans",system-ui,sans-serif;padding:8px 0;cursor:pointer;text-decoration:underline}
 h2{margin:2px 0 0;font-size:1.5rem;line-height:1.2;font-weight:800;overflow-wrap:anywhere}
-li.gl{display:block;padding:0}
+li.gl{display:block;padding:0;position:relative}
 .grp{width:100%;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:16px;cursor:pointer;border-radius:12px}
 .grp:active{background:var(--chip)}
 .gn{font-weight:800;font-size:1.15rem;overflow-wrap:anywhere}
 .gm{grid-column:1;color:var(--muted);font-size:.93rem}
 .ch{grid-column:2;grid-row:1/3;font-size:1.8rem;line-height:1;color:var(--muted)}
+/* --- Style Tambahan untuk Link Download --- */
+.dl-wrap{padding:0 16px 16px;margin-top:-6px}
+.dl-link{display:inline-block;background:var(--ok-bg);color:var(--ok-ink);padding:6px 12px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;border:1px solid rgba(17, 82, 31, 0.2)}
+.dl-link:active{opacity:.7}
+/* ------------------------------------------ */
 .count{margin:12px 0;color:var(--muted);font-size:.92rem}
 ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:4px 12px}
@@ -80,10 +85,20 @@ function start(d){D=d;
  groups=D.p.map((name,i)=>({name,i,n:rows.filter(r=>r.pi===i).length})).sort((a,b)=>a.name.localeCompare(b.name,'id',{numeric:true}));
  $('sub').textContent='Gapoktan Solo · '+rows.length.toLocaleString('id-ID')+' petani di '+D.p.length+' kelompok tani';
  render();}
+
 // ====== PENGATURAN ======
-// Tempel link Web App Apps Script (berakhiran /exec) di antara tanda petik:
+// 1. Link Web App Apps Script (API URL)
 const API_URL='https://script.google.com/macros/s/AKfycbw7uU4pzpq1D6866HOao3hDkEN9N0B-VDAcnu2adW6dfmGQy-v5qzgb3mFfFZLRU-Bf/exec';
+
+// 2. Daftar Link Download ERDKK Masing-masing Kelompok
+// Isi sesuai dengan nama kelompok yang persis sama di spreadsheet.
+// Jika link belum ada, biarkan kosong ("#")
+const LINK_DOWNLOAD = {
+  "SOLO II": "https://drive.google.com/file/d/17lYn5Iz564cL_XWtZvyb9Jxmct1VdToo/view?usp=drive_link",
+  "Nama Kelompok 2": "https://link-google-drive-kelompok-2.com"
+};
 // ========================
+
 function fail(msg){$('list').innerHTML='<li class="empty" style="display:block"><strong>Data belum bisa dimuat.</strong><br>'+msg+'</li>'}
 async function load(){
  if(!API_URL){fail('Link Apps Script (API_URL) di file index.html belum diisi.');return}
@@ -93,6 +108,7 @@ async function load(){
 }
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function hl(t,re){return re?t.split(re).map((x,i)=>i%2?'<mark>'+esc(x)+'</mark>':esc(x)).join(''):esc(t)}
+
 function render(){
  if(!D)return;
  const q=$('q').value.trim().toLowerCase(),tk=q?q.split(/\s+/):[];
@@ -100,10 +116,17 @@ function render(){
  $('gh').hidden=grp===null;
  $('q').placeholder=grp===null?'Ketik nama petani…':'Cari nama di kelompok ini…';
  if(grp!==null)$('gt').textContent=D.p[grp];
+ 
  if(grp===null&&!tk.length){
   $('cnt').textContent=groups.length+' kelompok tani. Pilih kelompok Anda, atau ketik nama untuk mencari.';
-  $('list').innerHTML=groups.map(g=>'<li class="gl"><button class="grp" data-i="'+g.i+'"><span class="gn">'+esc(g.name)+'</span><span class="ch" aria-hidden="true">›</span><span class="gm">'+g.n+' petani</span></button></li>').join('');
+  // Modifikasi: Menambahkan tombol link download berdasarkan map LINK_DOWNLOAD
+  $('list').innerHTML=groups.map(g=>{
+    const link = LINK_DOWNLOAD[g.name] || '#';
+    return '<li class="gl"><button class="grp" data-i="'+g.i+'"><span class="gn">'+esc(g.name)+'</span><span class="ch" aria-hidden="true">›</span><span class="gm">'+g.n+' petani</span></button>'
+         + '<div class="dl-wrap"><a href="'+link+'" target="_blank" class="dl-link">⬇ Download ERDKK 2026</a></div></li>'
+  }).join('');
   $('more').hidden=true;return}
+  
  const re=tk.length?new RegExp('('+tk.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi'):null;
  const res=rows.filter(r=>(grp===null||r.pi===grp)&&tk.every(t=>r.k.includes(t)));
  $('cnt').textContent=res.length?'Menampilkan '+Math.min(shown,res.length)+' dari '+res.length+' petani':'';
@@ -115,9 +138,11 @@ function render(){
   :'<li class="empty" style="display:block"><strong>Nama tidak ditemukan.</strong><br>Coba tulis sebagian nama saja atau periksa ejaannya.</li>';
  const left=res.length-shown;$('more').hidden=left<=0;$('more').textContent='Tampilkan '+Math.min(PAGE,left)+' lagi';
 }
+
 let t;$('q').addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{shown=PAGE;render()},120)});
 $('x').onclick=()=>{$('q').value='';shown=PAGE;render();$('q').focus()};
 $('more').onclick=()=>{shown+=PAGE;render()};
+// Fungsi klik hanya aktif jika elemen ditekan di bagian header kelompok, bukan saat klik link
 $('list').addEventListener('click',e=>{const b=e.target.closest('.grp');if(!b)return;
  grp=+b.dataset.i;shown=PAGE;history.pushState({g:grp},'');window.scrollTo(0,0);render()});
 $('back').onclick=()=>history.back();
