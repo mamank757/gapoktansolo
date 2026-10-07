@@ -103,7 +103,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 <button class="clear" id="x" aria-label="Hapus pencarian">×</button>
 </div></div></div>
 <main class="wrap">
-<div class="gh" id="gh" hidden><button class="back" id="back">‹ Semua kelompok</button><h2 id="gt"></h2></div>
+<div class="gh" id="gh" hidden><button class="back" id="back">‹ Kembali ke daftar kelompok</button><h2 id="gt"></h2></div>
 <p class="count" id="cnt" aria-live="polite"></p>
 
 <!-- Tampilan Loading Diperbarui Di Sini -->
@@ -184,7 +184,7 @@ function render(){
   $('list').innerHTML=groups.map(g=>{
     const link = LINK_DOWNLOAD[g.name] || '#';
     return '<li class="gl"><button class="grp" data-i="'+g.i+'"><span class="gn">'+esc(g.name)+'</span><span class="ch" aria-hidden="true">›</span>'
-         + '<span class="gm">'+g.n+' petani<br><span class="cta-lihat">Lihat Data di Simluhtan</span></span></button>'
+         + '<span class="gm">'+g.n+' petani<br><span class="cta-lihat">➡️ Lihat Data di Simluhtan</span></span></button>'
          + '<div class="dl-wrap"><a href="'+link+'" target="_blank" class="dl-link">⬇ Download ERDKK 2026</a></div></li>'
   }).join('');
   $('more').hidden=true;return}
