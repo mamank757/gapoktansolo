@@ -175,7 +175,7 @@ function render(){
  const q=$('q').value.trim().toLowerCase(),tk=q?q.split(/\s+/):[];
  $('x').classList.toggle('on',!!q);
  $('gh').hidden=grp===null;
- $('q').placeholder=grp===null?'Ketik nama petani…':'Cari nama di kelompok ini…';
+ $('q').placeholder=grp===null?'Cari nama petani...':'Cari nama di kelompok ini…';
  if(grp!==null)$('gt').textContent=D.p[grp];
  
  if(grp===null&&!tk.length){
