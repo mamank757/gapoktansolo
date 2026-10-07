@@ -125,7 +125,7 @@ let shown=PAGE,rows=[],D=null,grp=null,groups=[];
 function start(d){D=d;
  rows=D.r.map(r=>({n:r[0],p:D.p[r[1]],pi:r[1],j:D.j[r[2]],l:r[3],s:D.s[r[4]],k:(r[0]+' '+D.p[r[1]]).toLowerCase()}));
  groups=D.p.map((name,i)=>({name,i,n:rows.filter(r=>r.pi===i).length})).sort((a,b)=>a.name.localeCompare(b.name,'id',{numeric:true}));
- $('sub').textContent='Gapoktan Solo · '+rows.length.toLocaleString('id-ID')+' petani dari '+D.p.length+' kelompok tani';
+ $('sub').textContent='Gapoktan (Gabungan Kelompok Tani) - Solo · '+rows.length.toLocaleString('id-ID')+' petani dari '+D.p.length+' kelompok tani';
  render();}
 
 // ====== PENGATURAN ======
