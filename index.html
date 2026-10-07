@@ -91,7 +91,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 <body>
 <header><div class="wrap">
 <h1>Cek Data Petani<br>di SIMLUHTAN</h1>
-<p id="sub">Gapoktan Solo</p>
+<p id="sub">Gapoktan (Gabungan Kelompok Tani) - Solo</p>
 </div></header>
 <div class="bar"><div class="wrap">
 <div class="search" role="search">
@@ -117,7 +117,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 <!-- ==================================== -->
 
 <button class="more" id="more" hidden></button>
-<footer>Data sesuai spreadsheet Gapoktan Solo. Jika data Anda keliru atau belum muncul, hubungi penyuluh atau admin BPP.</footer>
+<footer>Data sesuai SIMLUHTAN (Sistem Penyuluh Pertanian). Jika data Anda keliru atau belum muncul, hubungi penyuluh.</footer>
 </main>
 <script>
 const $=id=>document.getElementById(id),PAGE=40;
@@ -125,7 +125,7 @@ let shown=PAGE,rows=[],D=null,grp=null,groups=[];
 function start(d){D=d;
  rows=D.r.map(r=>({n:r[0],p:D.p[r[1]],pi:r[1],j:D.j[r[2]],l:r[3],s:D.s[r[4]],k:(r[0]+' '+D.p[r[1]]).toLowerCase()}));
  groups=D.p.map((name,i)=>({name,i,n:rows.filter(r=>r.pi===i).length})).sort((a,b)=>a.name.localeCompare(b.name,'id',{numeric:true}));
- $('sub').textContent='Gapoktan Solo · '+rows.length.toLocaleString('id-ID')+' petani di '+D.p.length+' kelompok tani';
+ $('sub').textContent='Gapoktan Solo · '+rows.length.toLocaleString('id-ID')+' petani dari '+D.p.length+' kelompok tani';
  render();}
 
 // ====== PENGATURAN ======
