@@ -7,10 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F2F5EE;--surface:#fff;--ink:#17261B;--muted:#586A5C;--line:#D5DECF;--brand:#1F5A32;--on-brand:#fff;--warn-bg:#FFF1CC;--warn-ink:#6B4A00;--ok-bg:#D8F0DC;--ok-ink:#11521F;--chip:#E6EDDF;
+:root{--bg:#F2F5EE;--surface:#fff;--ink:#17261B;--muted:#586A5C;--line:#D5DECF;--brand:#1F5A32;--on-brand:#fff;--warn-bg:#FFF1CC;--warn-ink:#6B4A00;--ok-bg:#D8F0DC;--ok-ink:#11521F;--chip:#E6EDDF;--ket-bg:#FDE9E4;--ket-ink:#7A2A16;--ket-line:#D9694B;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}}
-:root[data-theme="dark"]{--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127;--ket-bg:#3B1E16;--ket-ink:#F5BFAE;--ket-line:#D9694B}}
+:root[data-theme="dark"]{--bg:#0F1912;--surface:#17241B;--ink:#E8F0E9;--muted:#9DB0A1;--line:#2B3D30;--brand:#2E7A47;--on-brand:#fff;--warn-bg:#3A2E0C;--warn-ink:#F3D27A;--ok-bg:#17402A;--ok-ink:#A6E3B6;--chip:#223127;--ket-bg:#3B1E16;--ket-ink:#F5BFAE;--ket-line:#D9694B}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -56,6 +56,9 @@ li{background:var(--surface);border:1px solid var(--line);border-radius:12px;pad
 .st{grid-column:1/-1;margin-top:6px;border-radius:8px;padding:8px 10px;font-size:.9rem;font-weight:600;display:flex;gap:8px;align-items:flex-start}
 .st.no{background:var(--warn-bg);color:var(--warn-ink)}
 .st.ok{background:var(--ok-bg);color:var(--ok-ink)}
+/* Keterangan dari spreadsheet */
+.ket{grid-column:1/-1;border-radius:8px;border-left:4px solid var(--ket-line);background:var(--ket-bg);color:var(--ket-ink);padding:8px 10px;font-size:.9rem;font-weight:600;overflow-wrap:anywhere}
+.ket small{display:block;font-weight:400;font-size:.75rem;opacity:.85}
 mark{background:#F6D76B;color:#2A2000;border-radius:3px;padding:0 1px}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted)}
 .more{display:block;width:100%;margin:14px 0 0;padding:14px;border-radius:12px;border:2px solid var(--brand);background:none;color:var(--ink);font:800 1rem "Plus Jakarta Sans",system-ui,sans-serif;cursor:pointer}
@@ -106,7 +109,7 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 <div class="gh" id="gh" hidden><button class="back" id="back">‹ Kembali ke daftar kelompok</button><h2 id="gt"></h2></div>
 <p class="count" id="cnt" aria-live="polite"></p>
 
-<!-- Tampilan Loading Diperbarui Di Sini -->
+<!-- Tampilan Loading -->
 <ul id="list">
   <li class="empty" style="display:block">
     <div class="loading-box">
@@ -126,14 +129,15 @@ footer{padding:26px 0 40px;color:var(--muted);font-size:.82rem}
 const $=id=>document.getElementById(id),PAGE=40;
 let shown=PAGE,rows=[],D=null,grp=null,groups=[];
 function start(d){D=d;
- rows=D.r.map(r=>({n:r[0],p:D.p[r[1]],pi:r[1],j:D.j[r[2]],l:r[3],s:D.s[r[4]],k:(r[0]+' '+D.p[r[1]]).toLowerCase()}));
+ // r[5] = indeks keterangan (kolom "Keterangan" di spreadsheet), D.k = daftar teks keterangan
+ rows=D.r.map(r=>({n:r[0],p:D.p[r[1]],pi:r[1],j:D.j[r[2]],l:r[3],s:D.s[r[4]],t:(D.k&&r[5]!=null?D.k[r[5]]:'')||'',k:(r[0]+' '+D.p[r[1]]).toLowerCase()}));
  groups=D.p.map((name,i)=>({name,i,n:rows.filter(r=>r.pi===i).length})).sort((a,b)=>a.name.localeCompare(b.name,'id',{numeric:true}));
  $('sub').textContent='Gapoktan (Gabungan Kelompok Tani) - Kelurahan Solo · '+rows.length.toLocaleString('id-ID')+' petani dari '+D.p.length+' kelompok tani';
  render();}
 
 // ====== PENGATURAN ======
 // 1. Link Web App Apps Script (API URL)
-const API_URL='https://script.google.com/macros/s/AKfycbw7uU4pzpq1D6866HOao3hDkEN9N0B-VDAcnu2adW6dfmGQy-v5qzgb3mFfFZLRU-Bf/exec';
+const API_URL='https://script.google.com/macros/s/AKfycby86lR1ad8Rszu4Gx6ZOuUDbS0RH2wg_TpsOoaGDg_uhA-FqA6cJMhb-OAjUyAsDT-k/exec';
 
 // 2. Daftar Link Download ERDKK Masing-masing Kelompok
 const LINK_DOWNLOAD = {
@@ -180,7 +184,6 @@ function render(){
  
  if(grp===null&&!tk.length){
   $('cnt').textContent=groups.length+' kelompok tani. Pilih kelompok Anda, atau ketik nama untuk mencari.';
-  // Modifikasi: Menambahkan tombol link download & teks "Lihat Data di Simluhtan"
   $('list').innerHTML=groups.map(g=>{
     const link = LINK_DOWNLOAD[g.name] || '#';
     return '<li class="gl"><button class="grp" data-i="'+g.i+'"><span class="gn">'+esc(g.name)+'</span><span class="ch" aria-hidden="true">›</span>'
@@ -196,7 +199,9 @@ function render(){
   const ok=/^(sudah|terdaftar)/i.test(r.s);
   return '<li><span class="nm">'+hl(r.n,re)+'</span><span class="ha">'+r.l.toLocaleString('id-ID',{maximumFractionDigits:2})+' ha<small>luas lahan</small></span>'
   +'<span class="meta">'+hl(r.p,re)+' <span class="jab'+(r.j!=='Anggota'?' pj':'')+'">'+esc(r.j)+'</span></span><span></span>'
-  +'<div class="st '+(ok?'ok':'no')+'"><span aria-hidden="true">'+(ok?'✔':'⏳')+'</span><span>ERDKK 2027: '+esc(r.s)+'</span></div></li>'}).join('')
+  +'<div class="st '+(ok?'ok':'no')+'"><span aria-hidden="true">'+(ok?'✔':'⏳')+'</span><span>ERDKK 2027: '+esc(r.s)+'</span></div>'
+  +(r.t?'<div class="ket"><small>Keterangan</small>'+esc(r.t)+'</div>':'')
+  +'</li>'}).join('')
   :'<li class="empty" style="display:block"><strong>Nama tidak ditemukan.</strong><br>Coba tulis sebagian nama saja atau periksa ejaannya.</li>';
  const left=res.length-shown;$('more').hidden=left<=0;$('more').textContent='Tampilkan lagi';
 }
