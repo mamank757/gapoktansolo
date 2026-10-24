@@ -16,6 +16,12 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.45 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
 header{background:var(--brand);color:var(--on-brand);padding:28px 0 22px}
+
+/* --- Style Logo & Header --- */
+.header-content { display: flex; align-items: center; gap: 16px; }
+.logo { width: 68px; height: auto; flex-shrink: 0; object-fit: contain; }
+/* --------------------------- */
+
 h1{margin:0 0 6px;font-size:clamp(1.6rem,6vw,2.2rem);line-height:1.15;font-weight:800;letter-spacing:-.01em}
 header p{margin:0;opacity:.9;font-size:.98rem}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--brand);padding:0 0 16px}
@@ -86,10 +92,15 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 </style>
 </head>
 <body>
-<header><div class="wrap">
-<h1>Portal Gapoktan<br>Kelurahan Solo</h1>
-<p id="sub">Pusat Layanan, Prediksi Cuaca & Data Pertanian</p>
-</div></header>
+<header>
+  <div class="wrap header-content">
+    <img src="https://raw.githubusercontent.com/mamank757/gapoktanmanurung/refs/heads/main/logo.png" alt="Logo Gapoktan Solo" class="logo" onerror="this.style.display='none'">
+    <div>
+      <h1>Portal Gapoktan<br>Kelurahan Solo</h1>
+      <p id="sub">Pusat Layanan BPP Bola, Fitur Pertanian & Data Pertanian</p>
+    </div>
+  </div>
+</header>
 <div class="bar"><div class="wrap">
 <div class="search" role="search">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
@@ -101,7 +112,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
   
 <!-- Menu Layanan Portal -->
 <div id="portal-menu" class="portal-section">
-  <h2 class="portal-title">Fitur</h2>
+  <h2 class="portal-title">Fitur Pertanian</h2>
   <div class="srv-grid">
     <a href="https://mamank757.github.io/smartfarm" target="_blank" class="srv-card">
       <span class="icon">🌱</span>
@@ -113,7 +124,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
     </a>
     <a href="https://mamank757.github.io/wajo" target="_blank" class="srv-card">
       <span class="icon">🌦️</span>
-      <span class="t">Prediksi Hujan Tahunan<br>Kab. Wajo</span>
+      <span class="t">Prakiraan Hujan Tahunan<br>Kab. Wajo</span>
     </a>
   </div>
 </div>
