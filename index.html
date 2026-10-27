@@ -111,6 +111,14 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 .ch-col span{font-size:.62rem;color:var(--muted);text-align:center;white-space:nowrap}
 .ch-h{font-size:.9rem;font-weight:800;margin:18px 0 0}
 .ch-note{font-size:.72rem;color:var(--muted);margin-top:8px}
+.ch-pair{position:relative;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.ch-pair u{position:absolute;left:10%;right:10%;bottom:0;background:rgba(227,178,60,.14);border:1.5px solid rgba(227,178,60,.55);border-bottom:0;border-radius:4px 4px 0 0}
+.ch-pair i{position:relative;z-index:1;width:56%}
+.ch-col .bl{font-size:.55rem;color:var(--muted)}
+.ch-leg{display:flex;gap:14px;flex-wrap:wrap;font-size:.72rem;color:var(--muted);margin-top:6px}
+.ch-leg s{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;text-decoration:none}
+.ch-leg .a{background:var(--brand)}
+.ch-leg .b{background:rgba(227,178,60,.14);border:1.5px solid rgba(227,178,60,.55)}
 </style>
 </head>
 <body>
@@ -339,6 +347,8 @@ async function loadWajo(){
   const tg=s=>new Date(s+'T00:00:00');
   const BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   const RM=['I','II','III'];
+  const BASELINE_BULAN=[83,88,130,242,345,340,257,144,144,146,146,99]; // Jan..Des (mm)
+const fi=n=>Math.round(n).toLocaleString('id-ID');
 
   // Kelompokkan per dasarian & per bulan
   const das={},bul={};
@@ -347,7 +357,7 @@ async function loadWajo(){
    const k=Math.min(3,Math.ceil(dd/10)), dim=new Date(y,m,0).getDate();
    const kd=x.tanggal.slice(0,7)+'-'+k, km=x.tanggal.slice(0,7);
    const a=das[kd]=das[kd]||{tot:0,n:0,len:k<3?10:dim-20,lbl:RM[k-1]+' '+BLN[m-1]};
-   const b=bul[km]=bul[km]||{tot:0,n:0,len:dim,lbl:BLN[m-1]+' '+String(y).slice(2)};
+   const b=bul[km]=bul[km]||{tot:0,n:0,len:dim,lbl:BLN[m-1]+' '+String(y).slice(2),m:m-1};
    a.tot+=x.rata2_mm;a.n++;b.tot+=x.rata2_mm;b.n++;
   });
   const ambil=(o,n)=>Object.keys(o).sort().slice(-n).map(k=>o[k]);
@@ -360,6 +370,16 @@ async function loadWajo(){
     '<div class="ch-col" title="Data tersedia '+x.n+' dari '+x.len+' hari"><b>'+f(x.tot)+'</b><i class="'+(x.n<x.len?'part':'')+'" style="height:'+Math.max(2,x.tot/mx*80)+'px"></i><span>'+x.lbl+'</span></div>'
    ).join('')+'</div>';
   };
+  const colsBulan=a=>{
+ const H=90, mx=Math.max(...a.map(x=>Math.max(x.tot,BASELINE_BULAN[x.m])),1);
+ return '<div class="ch-leg"><span><s class="a"></s>Tahun berjalan</span><span><s class="b"></s>Baseline rata-rata</span></div>'
+ +'<div class="ch-cols">'+a.map(x=>{
+  const bl=BASELINE_BULAN[x.m], pct=Math.round(x.tot/bl*100), lengkap=x.n>=x.len;
+  return '<div class="ch-col" title="'+x.lbl+': '+f(x.tot)+' mm vs baseline '+bl+' mm ('+pct+'%). Data '+x.n+'/'+x.len+' hari"><b>'+fi(x.tot)+'</b>'
+   +'<div class="ch-pair" style="height:'+H+'px"><u style="height:'+Math.max(2,bl/mx*H)+'px"></u><i class="'+(lengkap?'':'part')+'" style="height:'+Math.max(2,x.tot/mx*H)+'px"></i></div>'
+   +'<span>'+x.lbl+'</span><span class="bl">'+bl+'</span><span class="bl">'+pct+'%'+(lengkap?'':'*')+'</span></div>';
+ }).join('')+'</div>';
+};
   const box=(x,ttl)=>'<div><b>'+(x?f(x.tot)+' mm':'-')+'</b>'+ttl+(x?'<br>'+x.n+'/'+x.len+' hari':'')+'</div>';
 
   const t=d[d.length-1], last=d.slice(-14);
@@ -369,8 +389,8 @@ async function loadWajo(){
    '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm hari terakhir · '+(t.pos_aktif??'-')+' pos aktif</small></div>'
   +'<div class="ch-sum">'+box(dn,'Dasarian '+dn.lbl)+box(dl,dl?'Dasarian '+dl.lbl:'Dasarian lalu')+box(bn,'Bulan '+bn.lbl)+'</div>'
   +'<h3 class="ch-h">Total per Dasarian (mm)</h3>'+cols(ds)
-  +'<h3 class="ch-h">Total per Bulan (mm)</h3>'+cols(bs)
-  +'<div class="ch-note">Batang pucat = periode berjalan atau data belum lengkap. Dasarian I = tgl 1-10, II = 11-20, III = 21-akhir bulan.</div>'
+   +'<h3 class="ch-h">Total per Bulan (mm) vs Baseline</h3>'+colsBulan(bs)
+  +'<div class="ch-note">Batang pucat = periode berjalan atau data belum lengkap. Dasarian I = tgl 1-10, II = 11-20, III = 21-akhir bulan. Di bawah nama bulan: angka baseline (mm) lalu persentase hujan terhadap baseline. Tanda * = data bulan belum lengkap, jadi persentasenya masih rendah dan dibandingkan dengan baseline satu bulan penuh.</div>'
   +'<details><summary>Lihat tabel harian 14 hari terakhir</summary><div class="table-responsive" style="margin-top:8px"><table class="petani-table" style="min-width:0"><thead><tr><th>Tanggal</th><th>Pos aktif</th><th>Rata-rata (mm)</th></tr></thead><tbody>'
   +last.slice().reverse().map(x=>'<tr><td>'+tg(x.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short'})+'</td><td>'+(x.pos_aktif??'-')+'</td><td>'+f(x.rata2_mm)+'</td></tr>').join('')
   +'</tbody></table></div></details>';
