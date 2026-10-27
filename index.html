@@ -119,6 +119,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 .ch-leg s{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;text-decoration:none}
 .ch-leg .a{background:var(--brand)}
 .ch-leg .b{background:rgba(227,178,60,.14);border:1.5px solid rgba(227,178,60,.55)}
+.ch-cols.m{gap:3px}
 </style>
 </head>
 <body>
@@ -361,8 +362,11 @@ const fi=n=>Math.round(n).toLocaleString('id-ID');
    a.tot+=x.rata2_mm;a.n++;b.tot+=x.rata2_mm;b.n++;
   });
   const ambil=(o,n)=>Object.keys(o).sort().slice(-n).map(k=>o[k]);
-  const ds=ambil(das,6), bs=ambil(bul,12);
-  const dn=ds[ds.length-1], dl=ds[ds.length-2], bn=bs[bs.length-1];
+  const thn=+d[d.length-1].tanggal.slice(0,4);
+  const ds=ambil(das,6);
+  const bs=BLN.map((nm,i)=>bul[thn+'-'+String(i+1).padStart(2,'0')]
+    ||{tot:0,n:0,len:new Date(thn,i+1,0).getDate(),lbl:nm+' '+String(thn).slice(2),m:i,kosong:true});
+  const dn=ds[ds.length-1], dl=ds[ds.length-2], bn=bs.filter(x=>!x.kosong).pop();
 
   const cols=a=>{
    const mx=Math.max(...a.map(x=>x.tot),1);
@@ -370,16 +374,19 @@ const fi=n=>Math.round(n).toLocaleString('id-ID');
     '<div class="ch-col" title="Data tersedia '+x.n+' dari '+x.len+' hari"><b>'+f(x.tot)+'</b><i class="'+(x.n<x.len?'part':'')+'" style="height:'+Math.max(2,x.tot/mx*80)+'px"></i><span>'+x.lbl+'</span></div>'
    ).join('')+'</div>';
   };
-  const colsBulan=a=>{
- const H=90, mx=Math.max(...a.map(x=>Math.max(x.tot,BASELINE_BULAN[x.m])),1);
- return '<div class="ch-leg"><span><s class="a"></s>Tahun ini</span><span><s class="b"></s>Rata-rata 20 thn</span></div>'
- +'<div class="ch-cols">'+a.map(x=>{
-  const bl=BASELINE_BULAN[x.m], pct=Math.round(x.tot/bl*100), lengkap=x.n>=x.len;
-  return '<div class="ch-col" title="'+x.lbl+': '+f(x.tot)+' mm vs baseline '+bl+' mm ('+pct+'%). Data '+x.n+'/'+x.len+' hari"><b>'+fi(x.tot)+'</b>'
-   +'<div class="ch-pair" style="height:'+H+'px"><u style="height:'+Math.max(2,bl/mx*H)+'px"></u><i class="'+(lengkap?'':'part')+'" style="height:'+Math.max(2,x.tot/mx*H)+'px"></i></div>'
-   +'<span>'+x.lbl+'</span><span class="bl">'+bl+'</span><span class="bl">'+pct+'%'+(lengkap?'':'*')+'</span></div>';
- }).join('')+'</div>';
-};
+    const colsBulan=a=>{
+   const H=90, mx=Math.max(...a.map(x=>Math.max(x.tot,BASELINE_BULAN[x.m])),1);
+   return '<div class="ch-leg"><span><s class="a"></s>Tahun berjalan</span><span><s class="b"></s>Baseline rata-rata</span></div>'
+   +'<div class="ch-cols m">'+a.map(x=>{
+    const bl=BASELINE_BULAN[x.m], nm=x.lbl.slice(0,3);
+    const base='<u style="height:'+Math.max(2,bl/mx*H)+'px"></u>';
+    if(x.kosong) return '<div class="ch-col" title="'+nm+': belum berjalan. Baseline '+bl+' mm"><b>&nbsp;</b><div class="ch-pair" style="height:'+H+'px">'+base+'</div><span>'+nm+'</span><span class="bl">'+bl+'</span><span class="bl">&nbsp;</span></div>';
+    const pct=Math.round(x.tot/bl*100), lengkap=x.n>=x.len;
+    return '<div class="ch-col" title="'+nm+': '+f(x.tot)+' mm vs baseline '+bl+' mm ('+pct+'%). Data '+x.n+'/'+x.len+' hari"><b>'+fi(x.tot)+'</b>'
+     +'<div class="ch-pair" style="height:'+H+'px">'+base+'<i class="'+(lengkap?'':'part')+'" style="height:'+Math.max(2,x.tot/mx*H)+'px"></i></div>'
+     +'<span>'+nm+'</span><span class="bl">'+bl+'</span><span class="bl">'+pct+'%'+(lengkap?'':'*')+'</span></div>';
+   }).join('')+'</div>';
+  };
   const box=(x,ttl)=>'<div><b>'+(x?f(x.tot)+' mm':'-')+'</b>'+ttl+(x?'<br>'+x.n+'/'+x.len+' hari':'')+'</div>';
 
   const t=d[d.length-1], last=d.slice(-14);
