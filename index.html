@@ -325,7 +325,7 @@ $('list').addEventListener('click',e=>{const b=e.target.closest('.grp');if(!b)re
  grp=+b.dataset.i;history.pushState({g:grp},'');window.scrollTo(0,0);render()});
 $('back').onclick=()=>history.back();
 addEventListener('popstate',e=>{grp=e.state&&e.state.g!=null?e.state.g:null;render()});
-const WAJO_API_URL='https://script.google.com/macros/s/AKfycbz4eWBx9IXys_Y82az9CwVYLqQuCaxzk3Wcjh7ef5ZJDN8VLsygL-FNzqQJ0KYUd_wu/exec?aksi=wajo';
+const WAJO_API_URL='https://script.google.com/macros/s/AKfycbzYrg854FtJnAsQAnxjHrvL0TLsEJzCf0mLqUVKsuk75pktcX7GSq3OVQvomWAxLoDA/exec?aksi=wajo';
 
 async function loadWajo(){
  const info=$('ch-info'),body=$('ch-body');
@@ -351,7 +351,7 @@ async function loadWajo(){
    a.tot+=x.rata2_mm;a.n++;b.tot+=x.rata2_mm;b.n++;
   });
   const ambil=(o,n)=>Object.keys(o).sort().slice(-n).map(k=>o[k]);
-  const ds=ambil(das,6), bs=ambil(bul,6);
+  const ds=ambil(das,6), bs=ambil(bul,12);
   const dn=ds[ds.length-1], dl=ds[ds.length-2], bn=bs[bs.length-1];
 
   const cols=a=>{
