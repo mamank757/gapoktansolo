@@ -173,7 +173,7 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 </div>
 <!-- =================== -->
 <div class="ch-box">
-  <h2 class="portal-title" style="margin:0">🌧️ Curah Hujan Harian Kab. Wajo</h2>
+  <h2 class="portal-title" style="margin:0">🌧️ Curah Hujan Harian Kab. Wajo Terkini</h2>
   <div class="ch-sub" id="ch-info">Memuat data…</div>
   <div id="ch-body"></div>
 </div>
@@ -372,7 +372,7 @@ const fi=n=>Math.round(n).toLocaleString('id-ID');
   };
   const colsBulan=a=>{
  const H=90, mx=Math.max(...a.map(x=>Math.max(x.tot,BASELINE_BULAN[x.m])),1);
- return '<div class="ch-leg"><span><s class="a"></s>Tahun berjalan</span><span><s class="b"></s>Baseline rata-rata</span></div>'
+ return '<div class="ch-leg"><span><s class="a"></s>Tahun ini</span><span><s class="b"></s>Rata-rata 20 thn</span></div>'
  +'<div class="ch-cols">'+a.map(x=>{
   const bl=BASELINE_BULAN[x.m], pct=Math.round(x.tot/bl*100), lengkap=x.n>=x.len;
   return '<div class="ch-col" title="'+x.lbl+': '+f(x.tot)+' mm vs baseline '+bl+' mm ('+pct+'%). Data '+x.n+'/'+x.len+' hari"><b>'+fi(x.tot)+'</b>'
@@ -386,10 +386,10 @@ const fi=n=>Math.round(n).toLocaleString('id-ID');
   info.textContent='Data terakhir: '+tg(t.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+' · rata-rata pos aktif BBWS Pompengan Jeneberang';
 
   body.innerHTML=
-   '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm hari terakhir · '+(t.pos_aktif??'-')+' pos aktif</small></div>'
+   '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm hari terakhir dari data '+(t.pos_aktif??'-')+' pos pencatat curah hujan</small></div>'
   +'<div class="ch-sum">'+box(dn,'Dasarian '+dn.lbl)+box(dl,dl?'Dasarian '+dl.lbl:'Dasarian lalu')+box(bn,'Bulan '+bn.lbl)+'</div>'
-  +'<h3 class="ch-h">Total per Dasarian (mm)</h3>'+cols(ds)
-   +'<h3 class="ch-h">Total per Bulan (mm) vs Baseline</h3>'+colsBulan(bs)
+  +'<h3 class="ch-h">Total per Dasarian (10 hari) mm</h3>'+cols(ds)
+    +'<h3 class="ch-h">Total per Bulan (mm) vs Rata-rata Iklim Wajo</h3>'+colsBulan(bs)
   +'<div class="ch-note">Batang pucat = periode berjalan atau data belum lengkap. Dasarian I = tgl 1-10, II = 11-20, III = 21-akhir bulan. Di bawah nama bulan: angka baseline (mm) lalu persentase hujan terhadap baseline. Tanda * = data bulan belum lengkap, jadi persentasenya masih rendah dan dibandingkan dengan baseline satu bulan penuh.</div>'
   +'<details><summary>Lihat tabel harian 14 hari terakhir</summary><div class="table-responsive" style="margin-top:8px"><table class="petani-table" style="min-width:0"><thead><tr><th>Tanggal</th><th>Pos aktif</th><th>Rata-rata (mm)</th></tr></thead><tbody>'
   +last.slice().reverse().map(x=>'<tr><td>'+tg(x.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short'})+'</td><td>'+(x.pos_aktif??'-')+'</td><td>'+f(x.rata2_mm)+'</td></tr>').join('')
