@@ -376,7 +376,7 @@ const fi=n=>Math.round(n).toLocaleString('id-ID');
   };
     const colsBulan=a=>{
    const H=90, mx=Math.max(...a.map(x=>Math.max(x.tot,BASELINE_BULAN[x.m])),1);
-   return '<div class="ch-leg"><span><s class="a"></s>Tahun berjalan</span><span><s class="b"></s>Baseline rata-rata</span></div>'
+   return '<div class="ch-leg"><span><s class="a"></s>Tahun berjalan</span><span><s class="b"></s>Rata-rata tahunan</span></div>'
    +'<div class="ch-cols m">'+a.map(x=>{
     const bl=BASELINE_BULAN[x.m], nm=x.lbl.slice(0,3);
     const base='<u style="height:'+Math.max(2,bl/mx*H)+'px"></u>';
