@@ -103,6 +103,14 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 .ch-sum b{display:block;font-size:1.05rem;color:var(--ink)}
 .ch-box details{margin-top:12px}
 .ch-box summary{cursor:pointer;font-weight:700;font-size:.9rem}
+  .ch-cols{display:flex;align-items:flex-end;gap:6px;margin-top:10px}
+.ch-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.ch-col b{font-size:.72rem}
+.ch-col i{display:block;width:100%;background:var(--brand);border-radius:4px 4px 0 0}
+.ch-col i.part{opacity:.5}
+.ch-col span{font-size:.62rem;color:var(--muted);text-align:center;white-space:nowrap}
+.ch-h{font-size:.9rem;font-weight:800;margin:18px 0 0}
+.ch-note{font-size:.72rem;color:var(--muted);margin-top:8px}
 </style>
 </head>
 <body>
@@ -329,17 +337,41 @@ async function loadWajo(){
   if(!d.length)throw 0;
   const f=n=>Number(n).toLocaleString('id-ID',{maximumFractionDigits:1});
   const tg=s=>new Date(s+'T00:00:00');
-  const last=d.slice(-14), t=d[d.length-1];
-  const tot7=d.slice(-7).reduce((a,x)=>a+x.rata2_mm,0);
-  const hh=last.filter(x=>x.rata2_mm>=1).length;
-  const mx=Math.max(...last.map(x=>x.rata2_mm),1);
+  const BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const RM=['I','II','III'];
+
+  // Kelompokkan per dasarian & per bulan
+  const das={},bul={};
+  d.forEach(x=>{
+   const [y,m,dd]=x.tanggal.split('-').map(Number);
+   const k=Math.min(3,Math.ceil(dd/10)), dim=new Date(y,m,0).getDate();
+   const kd=x.tanggal.slice(0,7)+'-'+k, km=x.tanggal.slice(0,7);
+   const a=das[kd]=das[kd]||{tot:0,n:0,len:k<3?10:dim-20,lbl:RM[k-1]+' '+BLN[m-1]};
+   const b=bul[km]=bul[km]||{tot:0,n:0,len:dim,lbl:BLN[m-1]+' '+String(y).slice(2)};
+   a.tot+=x.rata2_mm;a.n++;b.tot+=x.rata2_mm;b.n++;
+  });
+  const ambil=(o,n)=>Object.keys(o).sort().slice(-n).map(k=>o[k]);
+  const ds=ambil(das,6), bs=ambil(bul,6);
+  const dn=ds[ds.length-1], dl=ds[ds.length-2], bn=bs[bs.length-1];
+
+  const cols=a=>{
+   const mx=Math.max(...a.map(x=>x.tot),1);
+   return '<div class="ch-cols">'+a.map(x=>
+    '<div class="ch-col" title="Data tersedia '+x.n+' dari '+x.len+' hari"><b>'+f(x.tot)+'</b><i class="'+(x.n<x.len?'part':'')+'" style="height:'+Math.max(2,x.tot/mx*80)+'px"></i><span>'+x.lbl+'</span></div>'
+   ).join('')+'</div>';
+  };
+  const box=(x,ttl)=>'<div><b>'+(x?f(x.tot)+' mm':'-')+'</b>'+ttl+(x?'<br>'+x.n+'/'+x.len+' hari':'')+'</div>';
+
+  const t=d[d.length-1], last=d.slice(-14);
   info.textContent='Data terakhir: '+tg(t.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+' · rata-rata pos aktif BBWS Pompengan Jeneberang';
+
   body.innerHTML=
-   '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm (rata-rata kemarin)</small></div>'
-  +'<div class="ch-bars">'+last.map(x=>'<div class="ch-bar" title="'+x.tanggal+': '+f(x.rata2_mm)+' mm" style="height:'+Math.max(2,x.rata2_mm/mx*100)+'%"></div>').join('')+'</div>'
-  +'<div class="ch-lbl">'+last.map(x=>'<span>'+tg(x.tanggal).getDate()+'</span>').join('')+'</div>'
-  +'<div class="ch-sum"><div><b>'+f(tot7)+' mm</b>Total 7 hari</div><div><b>'+hh+' hari</b>Hujan ≥1 mm (14 hr)</div><div><b>'+(t.pos_aktif??'-')+'</b>Pos aktif</div></div>'
-  +'<details><summary>Lihat tabel 14 hari terakhir</summary><div class="table-responsive" style="margin-top:8px"><table class="petani-table" style="min-width:0"><thead><tr><th>Tanggal</th><th>Pos aktif</th><th>Rata-rata (mm)</th></tr></thead><tbody>'
+   '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm hari terakhir · '+(t.pos_aktif??'-')+' pos aktif</small></div>'
+  +'<div class="ch-sum">'+box(dn,'Dasarian '+dn.lbl)+box(dl,dl?'Dasarian '+dl.lbl:'Dasarian lalu')+box(bn,'Bulan '+bn.lbl)+'</div>'
+  +'<h3 class="ch-h">Total per Dasarian (mm)</h3>'+cols(ds)
+  +'<h3 class="ch-h">Total per Bulan (mm)</h3>'+cols(bs)
+  +'<div class="ch-note">Batang pucat = periode berjalan atau data belum lengkap. Dasarian I = tgl 1-10, II = 11-20, III = 21-akhir bulan.</div>'
+  +'<details><summary>Lihat tabel harian 14 hari terakhir</summary><div class="table-responsive" style="margin-top:8px"><table class="petani-table" style="min-width:0"><thead><tr><th>Tanggal</th><th>Pos aktif</th><th>Rata-rata (mm)</th></tr></thead><tbody>'
   +last.slice().reverse().map(x=>'<tr><td>'+tg(x.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short'})+'</td><td>'+(x.pos_aktif??'-')+'</td><td>'+f(x.rata2_mm)+'</td></tr>').join('')
   +'</tbody></table></div></details>';
  }catch(e){
