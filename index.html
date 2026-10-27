@@ -90,6 +90,19 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
 .loading-text { animation: pulse 1.5s ease-in-out infinite alternate; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+.ch-box{margin-top:24px;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:16px}
+.ch-sub{color:var(--muted);font-size:.85rem}
+.ch-big{font-size:2.2rem;font-weight:800;color:var(--brand);line-height:1.1;margin-top:8px}
+.ch-big small{font-size:.9rem;font-weight:600;color:var(--muted)}
+.ch-bars{display:flex;align-items:flex-end;gap:4px;height:90px;margin:14px 0 4px}
+.ch-bar{flex:1;background:var(--brand);border-radius:4px 4px 0 0;min-height:2px}
+.ch-lbl{display:flex;gap:4px}
+.ch-lbl span{flex:1;text-align:center;font-size:.62rem;color:var(--muted)}
+.ch-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.ch-sum div{background:var(--chip);border-radius:10px;padding:8px;text-align:center;font-size:.72rem;color:var(--muted)}
+.ch-sum b{display:block;font-size:1.05rem;color:var(--ink)}
+.ch-box details{margin-top:12px}
+.ch-box summary{cursor:pointer;font-weight:700;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -143,6 +156,11 @@ footer{padding:30px 0 40px;color:var(--muted);font-size:.82rem; text-align:cente
   </div>
 </div>
 <!-- =================== -->
+<div class="ch-box">
+  <h2 class="portal-title" style="margin:0">🌧️ Curah Hujan Harian Kab. Wajo</h2>
+  <div class="ch-sub" id="ch-info">Memuat data…</div>
+  <div id="ch-body"></div>
+</div>
 
 <div class="gh" id="gh" hidden><button class="back" id="back">‹ Kembali ke daftar kelompok</button><h2 id="gt"></h2></div>
 
@@ -299,7 +317,37 @@ $('list').addEventListener('click',e=>{const b=e.target.closest('.grp');if(!b)re
  grp=+b.dataset.i;history.pushState({g:grp},'');window.scrollTo(0,0);render()});
 $('back').onclick=()=>history.back();
 addEventListener('popstate',e=>{grp=e.state&&e.state.g!=null?e.state.g:null;render()});
+const WAJO_API_URL='https://script.google.com/macros/s/AKfycbz4eWBx9IXys_Y82az9CwVYLqQuCaxzk3Wcjh7ef5ZJDN8VLsygL-FNzqQJ0KYUd_wu/exec?aksi=wajo';
+
+async function loadWajo(){
+ const info=$('ch-info'),body=$('ch-body');
+ try{
+  const res=await fetch(WAJO_API_URL+'&t='+Date.now());
+  if(!res.ok)throw 0;
+  const j=await res.json();
+  const d=(j.data||[]).filter(x=>x.rata2_mm!=null);
+  if(!d.length)throw 0;
+  const f=n=>Number(n).toLocaleString('id-ID',{maximumFractionDigits:1});
+  const tg=s=>new Date(s+'T00:00:00');
+  const last=d.slice(-14), t=d[d.length-1];
+  const tot7=d.slice(-7).reduce((a,x)=>a+x.rata2_mm,0);
+  const hh=last.filter(x=>x.rata2_mm>=1).length;
+  const mx=Math.max(...last.map(x=>x.rata2_mm),1);
+  info.textContent='Data terakhir: '+tg(t.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+' · rata-rata pos aktif BBWS Pompengan Jeneberang';
+  body.innerHTML=
+   '<div class="ch-big">'+f(t.rata2_mm)+' <small>mm (rata-rata kemarin)</small></div>'
+  +'<div class="ch-bars">'+last.map(x=>'<div class="ch-bar" title="'+x.tanggal+': '+f(x.rata2_mm)+' mm" style="height:'+Math.max(2,x.rata2_mm/mx*100)+'%"></div>').join('')+'</div>'
+  +'<div class="ch-lbl">'+last.map(x=>'<span>'+tg(x.tanggal).getDate()+'</span>').join('')+'</div>'
+  +'<div class="ch-sum"><div><b>'+f(tot7)+' mm</b>Total 7 hari</div><div><b>'+hh+' hari</b>Hujan ≥1 mm (14 hr)</div><div><b>'+(t.pos_aktif??'-')+'</b>Pos aktif</div></div>'
+  +'<details><summary>Lihat tabel 14 hari terakhir</summary><div class="table-responsive" style="margin-top:8px"><table class="petani-table" style="min-width:0"><thead><tr><th>Tanggal</th><th>Pos aktif</th><th>Rata-rata (mm)</th></tr></thead><tbody>'
+  +last.slice().reverse().map(x=>'<tr><td>'+tg(x.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'short'})+'</td><td>'+(x.pos_aktif??'-')+'</td><td>'+f(x.rata2_mm)+'</td></tr>').join('')
+  +'</tbody></table></div></details>';
+ }catch(e){
+  info.textContent='Data curah hujan belum bisa dimuat. Muat ulang halaman nanti.';
+ }
+}
 load();
+loadWajo();
 </script>
 </body>
 </html>
